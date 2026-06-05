@@ -4,9 +4,13 @@
 package org.example;
 
 import com.rpl.rama.Depot;
+import com.rpl.rama.PState;
 import com.rpl.rama.RamaModule;
 import com.rpl.rama.RamaSerializable;
 import com.rpl.rama.integration.TaskGlobalObject;
+import com.rpl.rama.module.*;
+import com.rpl.rama.ops.Ops;
+import com.rpl.rama.Path;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +18,9 @@ import java.util.List;
 import com.rpl.rama.integration.TaskGlobalContext;
 
 public class Core implements RamaModule {
+
     public static class ContactsBook implements TaskGlobalObject {
+
         public List<Contact> contacts;
 
         @Override
@@ -28,13 +34,23 @@ public class Core implements RamaModule {
         }
 
         @Override
-        public void close() { }
+        public void close() {
+        }
     }
-    
+
     public record Contact(String contactName, String phoneNumber) implements RamaSerializable {}
 
     @Override
     public void define(Setup setup, Topologies topologies) {
         setup.declareDepot("*contactDepot", Depot.random());
+
+        StreamTopology st = topologies.stream("contactsBook");
+        st.pstate("$$contactsByName", PState.mapSchema(String.class, Contact.class));
+        st.pstate("$$contactsByNumber", PState.mapSchema(String.class, Contact.class));
+
+        st.source("*contactDepot").out("*contact")
+          .localTransform("$$contactsByName", Path.key("*contactName").termVal("*contact"))
+          .localTransform("$$contactsByNumber", Path.key("*phoneNumber").termVal("*contact"));
+
     }
 }
