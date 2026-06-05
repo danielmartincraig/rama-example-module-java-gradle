@@ -3,13 +3,14 @@
  */
 package org.example;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.*;
 
 import com.rpl.rama.Depot;
-import com.rpl.rama.QueryTopologyClient;
 import com.rpl.rama.test.InProcessCluster;
+
+import java.util.List;
 
 class CoreTest {
     @Test void contactTest(TestInfo testInfo) throws Exception {
@@ -21,9 +22,11 @@ class CoreTest {
 
             Depot contactDepot = ipc.clusterDepot(coreModuleName, "*contactDepot");
 
-            contactDepot.append(new Core.Contact("Optometrist", "1800Contacts"));
-        
-            assertEquals(null, null);
+            Core.Contact optometrist = new Core.Contact("Optometrist", "1800Optometrist");
+            contactDepot.append(optometrist);
+
+            Core.Contact dentist = new Core.Contact("Dentist", "1800Dentist");
+            contactDepot.append(dentist);
         }
     }
 }
