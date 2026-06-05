@@ -41,6 +41,9 @@ public class Core implements RamaModule {
         public String contactName;
         public String phoneNumber;
 
+        // Required by RamaSerializable for deserialization
+        public Contact() {}
+
         public Contact(String contactName, String phoneNumber) {
             this.contactName = contactName;
             this.phoneNumber = phoneNumber;

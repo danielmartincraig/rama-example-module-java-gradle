@@ -3,14 +3,15 @@
  */
 package org.example;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-import org.junit.jupiter.api.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 
 import com.rpl.rama.Depot;
+import com.rpl.rama.PState;
+import com.rpl.rama.Path;
 import com.rpl.rama.test.InProcessCluster;
-
-import java.util.List;
 
 class CoreTest {
     @Test void contactTest(TestInfo testInfo) throws Exception {
@@ -22,11 +23,27 @@ class CoreTest {
 
             Depot contactDepot = ipc.clusterDepot(coreModuleName, "*contactDepot");
 
+            PState contactsByName = ipc.clusterPState(coreModuleName, "$$contactsByName");
+            PState contactsByNumber = ipc.clusterPState(coreModuleName, "$$contactsByNumber");
+
             Core.Contact optometrist = new Core.Contact("Optometrist", "1800Optometrist");
             contactDepot.append(optometrist);
 
             Core.Contact dentist = new Core.Contact("Dentist", "1800Dentist");
             contactDepot.append(dentist);
+
+            // Librarian contact should not exist
+            assertNull(contactsByName.selectOne(Path.key("Librarian")));
+
+            // Dentist contact should exist
+            assertNotNull(contactsByName.selectOne(Path.key("Dentist")));
+
+            // Librarian phone should not exist
+            assertNull(contactsByNumber.selectOne(Path.key("1800Librarian")));
+
+            // Dentist phone should exist
+            assertNotNull(contactsByNumber.selectOne(Path.key("1800Dentist")));
+
         }
     }
 }
