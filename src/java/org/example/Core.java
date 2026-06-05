@@ -3,19 +3,18 @@
  */
 package org.example;
 
-import com.rpl.rama.Depot;
-import com.rpl.rama.PState;
-import com.rpl.rama.RamaModule;
-import com.rpl.rama.RamaSerializable;
-import com.rpl.rama.integration.TaskGlobalObject;
-import com.rpl.rama.module.*;
-import com.rpl.rama.ops.Ops;
-import com.rpl.rama.Path;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import com.rpl.rama.Depot;
+import com.rpl.rama.PState;
+import com.rpl.rama.Path;
+import com.rpl.rama.RamaModule;
+import com.rpl.rama.RamaSerializable;
+import com.rpl.rama.helpers.TopologyUtils;
 import com.rpl.rama.integration.TaskGlobalContext;
+import com.rpl.rama.integration.TaskGlobalObject;
+import com.rpl.rama.module.StreamTopology;
 
 public class Core implements RamaModule {
 
@@ -38,7 +37,15 @@ public class Core implements RamaModule {
         }
     }
 
-    public record Contact(String contactName, String phoneNumber) implements RamaSerializable {}
+    public static class Contact implements RamaSerializable {
+        public String contactName;
+        public String phoneNumber;
+
+        public Contact(String contactName, String phoneNumber) {
+            this.contactName = contactName;
+            this.phoneNumber = phoneNumber;
+        }
+    }
 
     @Override
     public void define(Setup setup, Topologies topologies) {
@@ -49,6 +56,7 @@ public class Core implements RamaModule {
         st.pstate("$$contactsByNumber", PState.mapSchema(String.class, Contact.class));
 
         st.source("*contactDepot").out("*contact")
+          .macro(TopologyUtils.extractJavaFields("*contact", "*contactName", "*phoneNumber"))
           .localTransform("$$contactsByName", Path.key("*contactName").termVal("*contact"))
           .localTransform("$$contactsByNumber", Path.key("*phoneNumber").termVal("*contact"));
 
