@@ -5,12 +5,33 @@ package org.example;
 
 import com.rpl.rama.Depot;
 import com.rpl.rama.RamaModule;
+import com.rpl.rama.RamaSerializable;
+import com.rpl.rama.integration.TaskGlobalObject;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.rpl.rama.integration.TaskGlobalContext;
 
 public class Core implements RamaModule {
-    public static class Contact {
-        public String contactName;
-        public String phoneNumber; 
+    public static class ContactsBook implements TaskGlobalObject {
+        public List<Contact> contacts;
+
+        @Override
+        public void prepareForTask(int taskId, TaskGlobalContext context) {
+            contacts = new ArrayList<>();
+        }
+
+        public Object addContact(Contact contact) {
+            contacts.add(contact);
+            return null;
+        }
+
+        @Override
+        public void close() { }
     }
+    
+    public record Contact(String contactName, String phoneNumber) implements RamaSerializable {}
 
     @Override
     public void define(Setup setup, Topologies topologies) {
