@@ -3,10 +3,12 @@
  */
 package org.example;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 
 class Core {
     @Test void someLibraryMethodReturnsTrue() {
         Core classUnderTest = new Core();
+        assertTrue(false);
     }
 }

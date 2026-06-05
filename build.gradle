@@ -36,6 +36,17 @@ dependencies {
     implementation 'com.rpl:rama-helpers:0.10.0'
 }
 
+sourceSets {
+    test {
+        java {
+            srcDirs = ['test/java']
+        }
+        resources {
+            srcDirs = ['test/resources']
+        }
+    }
+}
+
 // Apply a specific Java toolchain to ease working on different environments.
 java {
     toolchain {
