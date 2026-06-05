@@ -60,7 +60,9 @@ public class Core implements RamaModule {
 
         st.source("*contactDepot").out("*contact")
           .macro(TopologyUtils.extractJavaFields("*contact", "*contactName", "*phoneNumber"))
+          .hashPartition("*contactName")
           .localTransform("$$contactsByName", Path.key("*contactName").termVal("*contact"))
+          .hashPartition("*phoneNumber")
           .localTransform("$$contactsByNumber", Path.key("*phoneNumber").termVal("*contact"));
 
     }
